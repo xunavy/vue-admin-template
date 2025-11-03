@@ -89,6 +89,18 @@ export const constantRoutes = [
       }
     ]
   },
+  {
+    path: '/nested-form',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: 'NestedForm',
+        component: () => import('@/views/NestedForm'),
+        meta: { title: 'Nested Form', icon: 'form' }
+      }
+    ]
+  },
 
   {
     path: '/user',
