@@ -6,7 +6,10 @@ const getDefaultState = () => {
   return {
     token: getToken(),
     name: '',
-    avatar: ''
+    avatar: '',
+    role: '',
+    permissions: [],
+    csrfToken: ''
   }
 }
 
@@ -24,6 +27,15 @@ const mutations = {
   },
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar
+  },
+  SET_ROLE: (state, role) => {
+    state.role = role
+  },
+  SET_PERMISSIONS: (state, permissions) => {
+    state.permissions = permissions
+  },
+  SET_CSRF_TOKEN: (state, csrfToken) => {
+    state.csrfToken = csrfToken
   }
 }
 
@@ -36,6 +48,12 @@ const actions = {
         const { data } = response
         commit('SET_TOKEN', data.token)
         setToken(data.token)
+        
+        // 保存刷新令牌
+        if (data.refreshToken) {
+          setRefreshToken(data.refreshToken)
+        }
+        
         resolve()
       }).catch(error => {
         reject(error)
@@ -53,10 +71,12 @@ const actions = {
           return reject('Verification failed, please Login again.')
         }
 
-        const { name, avatar } = data
+        const { name, avatar, role, permissions } = data
 
         commit('SET_NAME', name)
         commit('SET_AVATAR', avatar)
+        commit('SET_ROLE', role || '')
+        commit('SET_PERMISSIONS', permissions || [])
         resolve(data)
       }).catch(error => {
         reject(error)
@@ -68,7 +88,7 @@ const actions = {
   logout({ commit, state }) {
     return new Promise((resolve, reject) => {
       logout(state.token).then(() => {
-        removeToken() // must remove  token  first
+        clearTokens() // must remove all tokens first
         resetRouter()
         commit('RESET_STATE')
         resolve()
@@ -81,7 +101,7 @@ const actions = {
   // remove token
   resetToken({ commit }) {
     return new Promise(resolve => {
-      removeToken() // must remove  token  first
+      clearTokens() // must remove all tokens first
       commit('RESET_STATE')
       resolve()
     })
