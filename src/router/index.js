@@ -91,6 +91,22 @@ export const constantRoutes = [
   },
 
   {
+    path: '/user',
+    component: Layout,
+    redirect: '/user/list',
+    name: 'User',
+    meta: { title: 'User List', icon: 'el-icon-user' },
+    children: [
+      {
+        path: 'list',
+        name: 'UserList',
+        component: () => import('@/views/UserList'),
+        meta: { title: 'User List', icon: 'user' }
+      }
+    ]
+  },
+
+  {
     path: '/nested',
     component: Layout,
     redirect: '/nested/menu1',
